@@ -26,3 +26,14 @@ begin
     end generate add_instance;
 
 end architecture;
+
+---------------------------------------------------------------------------
+-- for any entity that goes into alu use entity definition as follows: 
+-- entity entity_name is
+--port (
+--    data_A : in std_logic_vector (15 downto 0);
+--    data_B : in std_logic_vector (15 downto 0);
+--    data_C : out std_logic_vector (15 downto 0)
+--);
+--end entity entity_name;
+----------------------------------------------------------------------------
