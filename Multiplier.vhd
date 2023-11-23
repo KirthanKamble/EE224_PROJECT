@@ -13,14 +13,13 @@ end entity Multiplier;
 
 architecture St of Multiplier is
 	
-component Four_Bit_Adder_Substractor is
-	port(A  : in std_logic_vector(3 downto 0);
-	     B  : in std_logic_vector(3 downto 0);
-	     M  : in std_logic;
-	     S  : out std_logic_vector(3 downto 0);
-	     Cout: out std_logic
-	    );
-end component Four_Bit_Adder_Substractor;
+component FOUR_BIT_ADDER_SUBSTRACTOR is
+	port(A : in std_logic_vector (3 downto 0);
+	     B : in std_logic_vector (3 downto 0);
+	     M : in std_logic;
+	     S : out std_logic_vector(3 downto 0);
+	     Co: out std_logic);
+end component FOUR_BIT_ADDER_SUBSTRACTOR;
 
 signal A1,B1,AB0,AB1,AB2,AB3,s1,s2,s3,car: std_logic_vector(3 downto 0);
 begin
