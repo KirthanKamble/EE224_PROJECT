@@ -11,7 +11,7 @@ end entity ADDER_16_BIT;
 
 architecture rtl of ADDER_16_BIT is
 
-    signal C_par, S_par : std_logic := '0';
+    signal C_par : std_logic := '0';
 
     component FULL_ADDER is
         port (
@@ -21,8 +21,8 @@ architecture rtl of ADDER_16_BIT is
     end component FULL_ADDER;
 
 begin
-    add_instance : for i in 0 to 15 generate 
-        adder: FULL_ADDER port map ()
+    add_instance: for i in 0 to 15 generate 
+        add_bit: FULL_ADDER port map (A=>data_A(i), B=>data_B(i), Ci=>C_par, S=>data_C(i), Co=>C_par);
     end generate add_instance;
 
 end architecture;
