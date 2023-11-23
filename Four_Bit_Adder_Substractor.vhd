@@ -6,7 +6,7 @@ use work.Gates.all;
 
 entity FOUR_BIT_ADDER_SUBSTRACTOR is
 	port(A : in std_logic_vector (3 downto 0);
-		 B : in std_logic_vector (3 downto 0);
+	     B : in std_logic_vector (3 downto 0);
 	     M : in std_logic;
 	     S : out std_logic_vector(3 downto 0);
 	     Co: out std_logic);
