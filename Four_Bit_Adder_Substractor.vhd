@@ -4,24 +4,33 @@ use ieee.std_logic_1164.all;
 library work;
 use work.Gates.all;
 
-entity Four_Bit_Adder_Substractor is
-	port(A,B: in std_logic_vector(3 downto 0);M: in std_logic;S: out std_logic_vector(3 downto 0);Cout: out std_logic);
-end entity Four_Bit_Adder_Substractor;
+entity FOUR_BIT_ADDER_SUBSTRACTOR is
+	port(A : in std_logic_vector (3 downto 0);
+		 B : in std_logic_vector (3 downto 0);
+	     M : in std_logic;
+	     S : out std_logic_vector(3 downto 0);
+	     Co: out std_logic);
+end entity FOUR_BIT_ADDER_SUBSTRACTOR;
 
-architecture Struct of Four_Bit_Adder_Substractor is
-component Full_Adder is
-	port(A,B,Cin: in std_logic; S,C: out std_logic);
-end component Full_Adder;
+architecture Struct of FOUR_BIT_ADDER_SUBSTRACTOR is
 
-signal Carry: std_logic_vector(2 downto 0);
-signal B_XOR_M: std_logic_vector(3 downto 0);
+	signal C_par : std_logic;
+
+	component FULL_ADDER is
+		port (
+			A,B,Ci: in std_logic;
+			S,Co  : out std_logic
+		);
+	end component FULL_ADDER;
+
 begin
-	x1: XOR_2 port map(A=>B(0),B=>M,Y=>B_XOR_M(0));
-	x2: XOR_2 port map(A=>B(1),B=>M,Y=>B_XOR_M(1));
-	x3: XOR_2 port map(A=>B(2),B=>M,Y=>B_XOR_M(2));
-	x4: XOR_2 port map(A=>B(3),B=>M,Y=>B_XOR_M(3));
-	fa1: Full_Adder port map(A=>A(0),B=>B_XOR_M(0),Cin=>M,S=>S(0),C=>Carry(0));
-	fa2: Full_Adder port map(A=>A(1),B=>B_XOR_M(1),Cin=>Carry(0),S=>S(1),C=>Carry(1));
-	fa3: Full_Adder port map(A=>A(2),B=>B_XOR_M(2),Cin=>Carry(1),S=>S(2),C=>Carry(2));
-	fa4: Full_Adder port map(A=>A(3),B=>B_XOR_M(3),Cin=>Carry(2),S=>S(3),C=>Cout);
+	C_par <= M; --instanciate M to C_par to be used in addition/subatraction
+
+    add_instance: for i in 0 to 3 generate 
+        add_bit: FULL_ADDER port map (A=>A(i), 
+                                      B=>(M xor B(i)), 
+                                      Ci=>C_par, 
+                                      S=>C(i), 
+                                      Co=>C_par);
+    end generate add_instance;
 end Struct;
