@@ -5,7 +5,8 @@ library work;
 use work.gates.all;
 
 entity Multiplier is 
-	port(data_A,data_B: in std_logic_vector(15 downto 0); 
+	port(data_A: in std_logic_vector(15 downto 0); 
+	     data_B: in std_logic_vector(15 downto 0);
 	     data_C: out std_logic_vector(15 downto 0)
 	    );
 end entity Multiplier;
@@ -13,7 +14,8 @@ end entity Multiplier;
 architecture St of Multiplier is
 	
 component Four_Bit_Adder_Substractor is
-	port(A,B: in std_logic_vector(3 downto 0);
+	port(A  : in std_logic_vector(3 downto 0);
+	     B  : in std_logic_vector(3 downto 0);
 	     M  : in std_logic;
 	     S  : out std_logic_vector(3 downto 0);
 	     Cout: out std_logic
