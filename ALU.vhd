@@ -15,8 +15,8 @@ architecture rtl of ALU is
 
     function perform_addition(A, B : std_logic_vector (15 downto 0)) return std_logic_vector is
         variable temp_result : std_logic_vector(15 downto 0);
-		  variable C_par       : std_logic := '0';
-		  variable G, P        : std_logic;
+		variable C_par       : std_logic := '0';
+		variable G, P        : std_logic;
     begin
 			add_instance: for i in 0 to 15 loop
 								G := A(i) and B(i);
@@ -29,23 +29,23 @@ architecture rtl of ALU is
 
     function perform_subtraction(A, B : std_logic_vector(15 downto 0)) return std_logic_vector is
         variable temp_result : std_logic_vector(15 downto 0);
-		  variable C_par       : std_logic := '1';
-		  variable G, P        : std_logic;
+		variable C_par       : std_logic := '1';
+		variable G, P        : std_logic;
     begin
-        sub_instance: for i in 0 to 15 loop
+            sub_instance: for i in 0 to 15 loop
 							  G := A(i) and (not B(i));
 							  P := A(i) xor (not B(i));
 							  temp_result(i) := P xor C_par;
 							  C_par := G or (P and C_par);
-		  end loop sub_instance;						  
+		    end loop sub_instance;						  
         return temp_result;
     end function;
 
     function perform_multiplication(A, B : std_logic_vector(15 downto 0)) return std_logic_vector is
         variable temp_result : std_logic_vector(15 downto 0);
-		  variable product     : std_logic_vector(7 downto 0);
-		  variable A_par       : std_logic_vector(3 downto 0) := A(3 downto 0);
-		  variable B_par       : std_logic_vector(3 downto 0) := B(3 downto 0);
+		variable product     : std_logic_vector(7 downto 0);
+		variable A_par       : std_logic_vector(3 downto 0) := A(3 downto 0);
+		variable B_par       : std_logic_vector(3 downto 0) := B(3 downto 0);
     begin
         outer: for i in 0 to 3 loop 
 		   inner: for j in 0 to 3 loop
@@ -54,7 +54,7 @@ architecture rtl of ALU is
 		  end loop outer;
 		  
 		  temp_result := "00000000" & produt;
-		  return temp_result;
+		return temp_result;
     end function;
 
     function perform_and(A, B : std_logic_vector(15 downto 0)) return std_logic_vector is
@@ -95,12 +95,12 @@ architecture rtl of ALU is
     
 begin 
     with instr select
-        alu_C <= perform_addition    	(alu_A, alu_B) when 1,
-                 perform_subtraction	(alu_A, alu_B) when 2,
+        alu_C <= perform_addition(alu_A, alu_B)       when 1,
+                 perform_subtraction (alu_A, alu_B)   when 2,
                  perform_multiplication(alu_A, alu_B) when 3,
-                 perform_and				(alu_A, alu_B) when 4,
-                 perform_or				(alu_A, alu_B)	when 5,
-                 perform_imp 				(alu_A, alu_B)	when 6,
-                 perfomr_concat 			(alu_A, alu_B)	when 7;
+                 perform_and(alu_A, alu_B)            when 4,
+                 perform_or(alu_A, alu_B)	          when 5,
+                 perform_imp(alu_A, alu_B)	          when 6,
+                 perfomr_concat(alu_A, alu_B)	      when 7;
 
 end architecture;
