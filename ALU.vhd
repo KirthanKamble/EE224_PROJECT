@@ -105,12 +105,12 @@ architecture rtl of ALU is
     
 begin 
     with instr select
-        alu_C <= perform_addition    	(alu_A, alu_B) when 1,
-                 perform_subtraction	(alu_A, alu_B) when 2,
-                 perform_multiplication(alu_A, alu_B) when 3,
+        alu_C <= perform_addition        	(alu_A, alu_B) when 1,
+                 perform_subtraction	    (alu_A, alu_B) when 2,
+                 perform_multiplication     (alu_A, alu_B) when 3,
                  perform_and				(alu_A, alu_B) when 4,
-                 perform_or				(alu_A, alu_B)	when 5,
-                 perform_imp 				(alu_A, alu_B)	when 6,
-                 perfomr_concat 			(alu_A, alu_B)	when 7;
+                 perform_or			    	(alu_A, alu_B) when 5,
+                 perform_imp 				(alu_A, alu_B) when 6,
+                 perfomr_concat 			(alu_A, alu_B) when 7;
 
 end architecture;
