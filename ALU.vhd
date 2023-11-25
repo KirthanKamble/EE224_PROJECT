@@ -45,14 +45,32 @@ architecture rtl of ALU is
     function perform_multiplication(A, B : std_logic_vector(15 downto 0)) return std_logic_vector is
         variable temp_result : std_logic_vector(15 downto 0);
         variable product     : std_logic_vector(7 downto 0) := "00000000";
+	variable AB0,AB1,AB2,AB3 : std_logic_vector(3 downto 0);
     begin
-        outer: for i in 0 to 3 loop 
-            inner: for j in 0 to 3 loop
-                product(i+j) := product(i+j) xor (A(i) and B(j));
-            end loop inner;
-        end loop outer;
+	k1: for i in 0 to 3 loop:
+	begin
+		AB0(i) <= A(i) and B(0);
+		AB1(i) <= A(i) and B(1);
+		AB2(i) <= A(i) and B(2);
+		AB3(i) <= A(i) and B(3);
+	end loop k1;
+
+	temp_result(0) := AB0(0);
+	temp_result(1) := AB0(1) or AB1(0);
+	temp_result(2) := (AB0(1) and AB1(0)) or AB0(2) or AB1(1) or AB2(0);
+	temp_result(3) := (AB0(1) and AB1(0) and AB0(2) and AB1(1) and AB2(0)) or AB0(3) or AB1(2) or AB2(1) or AB3(0);
+	temp_result(4) := (AB0(1) and AB1(0) and AB0(2) and AB1(1) and AB2(0) and AB0(3) and AB1(2) and AB2(1) and AB3(0)) or AB1(3) or AB2(2) or AB3(1);
+	temp_result(5) := (AB0(1) and AB1(0) and AB0(2) and AB1(1) and AB2(0) and AB0(3) and AB1(2) and AB2(1) and AB3(0) and AB1(3) and AB2(2) and AB3(1)) or AB2(3) or AB3(2);
+	temp_result(6) := (AB0(1) and AB1(0) and AB0(2) and AB1(1) and AB2(0) and AB0(3) and AB1(2) and AB2(1) and AB3(0) and AB1(3) and AB2(2) and AB3(1) and AB2(3) and AB3(2)) or AB3(3);
+	temp_result(7) := AB0(1) and AB1(0) and AB0(2) and AB1(1) and AB2(0) and AB0(3) and AB1(2) and AB2(1) and AB3(0) and AB1(3) and AB2(2) and AB3(1) and AB2(3) and AB3(2) and AB3(3);
+	temp_result(15 downto 8) := "00000000";
+        --outer: for i in 0 to 3 loop 
+        --   inner: for j in 0 to 3 loop
+        --        product(i+j) := product(i+j) xor (A(i) and B(j));
+        --    end loop inner;
+        --end loop outer;
         
-        temp_result := "00000000" & product;
+        --temp_result := "00000000" & product;
         return temp_result;
     end function;    
 
