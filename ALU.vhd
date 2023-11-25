@@ -26,7 +26,22 @@ architecture rtl of ALU is
             C_par := G or (P and C_par);
         end loop add_instance;						
         return temp_result;
-    end function;    
+    end function;
+
+     function perform_4bit_addition(A, B : std_logic_vector(3 downto 0); Cin: std_logic) return std_logic_vector is
+        variable temp_result : std_logic_vector(4 downto 0);
+        variable C_par       : std_logic := Cin;
+        variable G, P        : std_logic;
+    begin
+        add_instance: for i in 0 to 3 loop
+            G := A(i) and B(i);
+            P := A(i) xor B(i);
+            temp_result(i) := P xor C_par;
+            C_par := G or (P and C_par);
+        end loop add_instance;
+	    temp_result(4) := C_par;
+        return temp_result;
+    end function;
 
     function perform_subtraction(A, B : std_logic_vector(15 downto 0)) return std_logic_vector is
         variable temp_result : std_logic_vector(15 downto 0);
@@ -45,7 +60,8 @@ architecture rtl of ALU is
     function perform_multiplication(A, B : std_logic_vector(15 downto 0)) return std_logic_vector is
         variable temp_result : std_logic_vector(15 downto 0);
         variable product     : std_logic_vector(7 downto 0) := "00000000";
-	variable AB0,AB1,AB2,AB3 : std_logic_vector(3 downto 0);
+	variable AB0,AB1,AB2,AB3,t1a,t2a,t3a : std_logic_vector(3 downto 0);
+	variable t1,t2,t3: std_logic_vector(5 downto 0);
     begin
 	k1: for i in 0 to 3 loop:
 	begin
@@ -55,22 +71,20 @@ architecture rtl of ALU is
 		AB3(i) <= A(i) and B(3);
 	end loop k1;
 
+	
+	t1a(2 downto 0) := AB0(3 downto 1);
+	t1a(3) := '0';
+	t1 := perform_4bit_addition(t1a,AB1,'0');
+	t2a(2 downto 0) := AB1(3 downto 1);
+	t2a(3) := '0';
+	t2 := perform_4bit_addition(t2a,AB2,t1a(4));
+	t3a(2 downto 0) := AB2(3 downto 1);
+	t3a(3) := '0';
+	t3 := perform_4bit_addition(t3a,AB3,t2a(4));
 	temp_result(0) := AB0(0);
-	temp_result(1) := AB0(1) or AB1(0);
-	temp_result(2) := (AB0(1) and AB1(0)) or AB0(2) or AB1(1) or AB2(0);
-	temp_result(3) := (AB0(1) and AB1(0) and AB0(2) and AB1(1) and AB2(0)) or AB0(3) or AB1(2) or AB2(1) or AB3(0);
-	temp_result(4) := (AB0(1) and AB1(0) and AB0(2) and AB1(1) and AB2(0) and AB0(3) and AB1(2) and AB2(1) and AB3(0)) or AB1(3) or AB2(2) or AB3(1);
-	temp_result(5) := (AB0(1) and AB1(0) and AB0(2) and AB1(1) and AB2(0) and AB0(3) and AB1(2) and AB2(1) and AB3(0) and AB1(3) and AB2(2) and AB3(1)) or AB2(3) or AB3(2);
-	temp_result(6) := (AB0(1) and AB1(0) and AB0(2) and AB1(1) and AB2(0) and AB0(3) and AB1(2) and AB2(1) and AB3(0) and AB1(3) and AB2(2) and AB3(1) and AB2(3) and AB3(2)) or AB3(3);
-	temp_result(7) := AB0(1) and AB1(0) and AB0(2) and AB1(1) and AB2(0) and AB0(3) and AB1(2) and AB2(1) and AB3(0) and AB1(3) and AB2(2) and AB3(1) and AB2(3) and AB3(2) and AB3(3);
-	temp_result(15 downto 8) := "00000000";
-        --outer: for i in 0 to 3 loop 
-        --   inner: for j in 0 to 3 loop
-        --        product(i+j) := product(i+j) xor (A(i) and B(j));
-        --    end loop inner;
-        --end loop outer;
-        
-        --temp_result := "00000000" & product;
+	temp_result(1) := t1(0);
+	temp_result(2) := t2(0);
+	temp_result(7 downto 3) := t3;
         return temp_result;
     end function;    
 
