@@ -53,7 +53,7 @@ architecture rtl of ALU is
 			end loop inner;
 		  end loop outer;
 		  
-		  temp_result := "00000000" & produt;
+		  temp_result := "00000000" & product;
 		return temp_result;
     end function;
 
