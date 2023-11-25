@@ -46,6 +46,6 @@ begin
 
     D1 <= registers(to_integer(unsigned(A1)));
     D2 <= registers(to_integer(unsigned(A2)));
-	D3 <= registers(7);
+    D3 <= registers(7);
     
 end architecture;
