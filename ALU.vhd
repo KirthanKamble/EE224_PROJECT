@@ -75,10 +75,10 @@ architecture rtl of ALU is
 	t1a(2 downto 0) := AB0(3 downto 1);
 	t1a(3) := '0';
 	t1 := perform_4bit_addition(t1a,AB1,'0');
-	t2a(2 downto 0) := t1a(3 downto 1);
+	t2a(2 downto 0) := t1(3 downto 1);
 	t2a(3) := '0';
 	t2 := perform_4bit_addition(t2a,AB2,t1a(4));
-	t3a(2 downto 0) := t2a(3 downto 1);
+	t3a(2 downto 0) := t2(3 downto 1);
 	t3a(3) := '0';
 	t3 := perform_4bit_addition(t3a,AB3,t2a(4));
 	temp_result(0) := AB0(0);
