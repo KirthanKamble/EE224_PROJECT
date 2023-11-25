@@ -29,18 +29,14 @@ begin
     process(RF_W, A4, D4)
     begin 
         if rising_edge(RF_W) then 
-            if RF_W = '1' then 
-                registers(to_integer(unsigned(A4))) <= D4;
-            end if;
+            registers(to_integer(unsigned(A4))) <= D4;
         end if;
     end process;
 	 
 	 process(RF_IP, A3)
     begin 
         if rising_edge(RF_IP) then 
-            if RF_IP = '1' then 
-                registers(7) <= A3;
-            end if;
+            registers(7) <= A3;
         end if;
     end process;
 
