@@ -84,12 +84,21 @@ architecture rtl of ALU is
         return temp_result(15 downto 0);
     end function;
 
-    function perform_concat(A, B : std_logic_vector(15 downto 0)) return std_logic_vector is
+    function perform_LLI(A, B : std_logic_vector(15 downto 0)) return std_logic_vector is
         variable temp_result : std_logic_vector(15 downto 0);
-		  variable A_par       : std_logic_vector(8 downto 0) := A(15 downto 8);
-		  variable B_par       : std_logic_vector(6 downto 0) := B(7 downto 0);
+		  variable A_par       : std_logic_vector(8 downto 0) := A(8 downto 0);
+		  variable B_par       : std_logic_vector(6 downto 0) := B(6 downto 0);
     begin
 					  temp_result := A_par & B_par;
+        return temp_result(15 downto 0);
+    end function;
+
+     function perform_concat(A, B : std_logic_vector(15 downto 0)) return std_logic_vector is
+        variable temp_result : std_logic_vector(15 downto 0);
+		  variable A_par       : std_logic_vector(8 downto 0) := A(8 downto 0);
+		  variable B_par       : std_logic_vector(6 downto 0) := B(6 downto 0);
+    begin
+					  temp_result := B_par & A_par;
         return temp_result(15 downto 0);
     end function;
     
@@ -99,8 +108,10 @@ begin
                  perform_subtraction (alu_A, alu_B)   when 2,
                  perform_multiplication(alu_A, alu_B) when 3,
                  perform_and(alu_A, alu_B)            when 4,
-                 perform_or(alu_A, alu_B)	          when 5,
-                 perform_imp(alu_A, alu_B)	          when 6,
-                 perfomr_concat(alu_A, alu_B)	      when 7;
+                 perform_or(alu_A, alu_B)	      when 5,
+                 perform_imp(alu_A, alu_B)	      when 6,
+                 perfomr_LHI(alu_A, alu_B)	      when 7;
+	         perfomr_LLI(alu_A, alu_B)	      when 8;
+
 
 end architecture;
