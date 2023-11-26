@@ -38,12 +38,12 @@ architecture rtl of trial_check is
 
 begin
     with S select 
-        when S1 =>
+        when (state = S1) =>
             IR <= core_memory(to_unsigned(register_memory(7)));
             update_ip: if ((IR(15 downto 14) = "11") or (IR(15 downto 12) = "0001")) generate
-                         ALU port map (register_memory(7), std_logic_vector(to_unsigned(0, 16)), 1, T3, trash(0), trash(0));
-                       else 
-                         ALU port map (register_memory(7), std_logic_vector(to_unsigned(2, 16)), T3);
+                        alu_instance: ALU port map (register_memory(7), std_logic_vector(to_unsigned(0, 16)), 1, T3, trash(0), trash(0));
+                       else generate
+                        alu_instnace: ALU port map (register_memory(7), std_logic_vector(to_unsigned(2, 16)), T3);
                       end generate update_ip;
 
             
@@ -75,30 +75,31 @@ begin
 											  end generate decision_condition;
 					updation: 
 						 if ((IR(15) and IR(14)) or ((not IR(14)) and IR(13) and (not IR(12)))) generate
-							  ALU port map (T1, decision, 2, T3, C_flag, Z_flag); -- subtraction 
+							update_instance:  ALU port map (T1, decision, 2, T3, C_flag, Z_flag); -- subtraction 
 						 elsif ((not (IR(15) or IR(14) or IR(12)))) generate
-							  ALU port map (T1, decision, 1, T3, C_flag, Z_flag); -- add
+							update_instance:  ALU port map (T1, decision, 1, T3, C_flag, Z_flag); -- add
 						 elsif (IR(15) and (not IR(14)) and IR(12)) generate 
-							  ALU port map (T1, decision, 8, T3, C_flag, Z_flag); -- LLI
+							update_instance:  ALU port map (T1, decision, 8, T3, C_flag, Z_flag); -- LLI
 						 elsif (IR(15) and (not IR(14)) and (not IR(12))) generate 
-							  ALU port map (T1, decision, 7, T3, C_flag, Z_flag); -- LHI
+							update_instance:  ALU port map (T1, decision, 7, T3, C_flag, Z_flag); -- LHI
 						 elsif (IR(15 downto 12) = "0011") generate
-							  ALU port map (T1, decision, 3, T3, C_flag, Z_flag); -- multiplication
+							update_instance:  ALU port map (T1, decision, 3, T3, C_flag, Z_flag); -- multiplication
 						 elsif (IR(15 downto 12) = "1010") generate
-							  ALU port map (T1, decision, 5, T3, C_flag, Z_flag); -- or
+							update_insatance:  ALU port map (T1, decision, 5, T3, C_flag, Z_flag); -- or
 						 elsif (IR(15 downto 12) = "0100") generate
-							  ALU port map (T1, decision, 4, T3, C_flag, Z_flag); -- and
+							update_instance:  ALU port map (T1, decision, 4, T3, C_flag, Z_flag); -- and
 						 elsif (IR(15 downto 12) = "1001") generate
-							  ALU port map (T1, decision, 6, T3, C_flag, Z_flag); -- imp 
+							update_instance:  ALU port map (T1, decision, 6, T3, C_flag, Z_flag); -- imp 
                 end generate updation;
         
 
         when S5 =>
-            signal sign_extended_Imm : std_logic_vector(15 downto 0) := "0000000000" & IR(5 downto 0);
+            signal sign_extended_Imm : std_logic_vector(15 downto 0);
+				sign_exteded_Imm <= "0000000000" & IR(5 downto 0);
             start: ALU port map (sign_extended_Imm, T2, 1, T3, trash(0), trash(1));
 
         when S6 => 
-            signal shifted_sign_extended := "000000000" & IR(5 downto 0) & "0";
+            signal shifted_sign_extended : std_logic_vector(15 downto 0); shifted_sign_extendeed <= "000000000" & IR(5 downto 0) & "0";
             alu: ALU port map (register_memory(7), shifted_sign_extended, 1, T3, trash(0), trash(0));
 
         when S7 => 
@@ -118,11 +119,11 @@ begin
 
         when S10 => 
             signal branch_jump : std_logic_vector(15 downto 0);
-            branch_condition: if Z_flag generate
+            branch_condition: if (Z_flag = 1) generate
                                  branch_jump <= "000000000" & IR(5 downto 0) & "0";
-                              elsif 
+                              elsif (Z_flag = 0) generate
                                  branch_jump <= "0000000000000010"; --std_logic_vector(to_unsigned(2, 16));
                               end generate branch_condition;
-            braching: ALU port map (register_memory(7), branch_jump, 1, T3);
+            braching: ALU port map (register_memory(7), branch_jump, 1, T3);            
        
 end architecture;
