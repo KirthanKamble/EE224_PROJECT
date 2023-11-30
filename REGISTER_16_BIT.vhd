@@ -25,16 +25,16 @@ architecture rtl of REGISTER_16_BIT is
 
 begin
     
-    D00: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(0), Q=>data_out(0));
-    D01: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(1), Q=>data_out(1));
-    D02: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(2), Q=>data_out(2));
-    D03: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(3), Q=>data_out(3));
-    D04: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(4), Q=>data_out(4));
-    D05: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(5), Q=>data_out(5));
-    D06: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(6), Q=>data_out(6));
-    D07: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(7), Q=>data_out(7));
-    D08: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(8), Q=>data_out(8));
-    D09: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(9), Q=>data_out(9));
+    D00: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(0),   Q=>data_out(0));
+    D01: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(1),   Q=>data_out(1));
+    D02: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(2),   Q=>data_out(2));
+    D03: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(3),   Q=>data_out(3));
+    D04: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(4),   Q=>data_out(4));
+    D05: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(5),   Q=>data_out(5));
+    D06: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(6),   Q=>data_out(6));
+    D07: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(7),   Q=>data_out(7));
+    D08: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(8),   Q=>data_out(8));
+    D09: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(9),   Q=>data_out(9));
     D10: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(10), Q=>data_out(10));
     D11: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(11), Q=>data_out(11));
     D12: D_FF port map (clk=>Clk, reset=>Reset, D=>data_in(12), Q=>data_out(12));
