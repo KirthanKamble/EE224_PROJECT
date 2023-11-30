@@ -56,7 +56,7 @@ begin
 
 ALU_1 : ALU port map(alu_a, alu_b, instr, alu_c, C, Z);
 
-state_trans : process(S)
+state_process : process(S)
 	begin
 	case S is 
 		when S1 =>
@@ -227,6 +227,6 @@ state_trans : process(S)
 		 
 	end case;
 	
-end process state_trans;
+end process state_process;
        
 end architecture;
