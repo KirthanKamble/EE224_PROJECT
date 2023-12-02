@@ -33,7 +33,7 @@ begin
         end if;
     end process;
 	 
-	 process(RF_IP, A3)
+    process(RF_IP, A3)
     begin 
         if rising_edge(RF_IP) then 
             registers(7) <= A3;
