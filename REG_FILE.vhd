@@ -16,7 +16,7 @@ entity REG_FILE is
         D4 : in std_logic_vector (15 downto 0);
 
         RF_W : in std_logic;
-		  RF_IP: in std_logic 
+        RF_IP: in std_logic 
     );
 end entity REG_FILE;
 
