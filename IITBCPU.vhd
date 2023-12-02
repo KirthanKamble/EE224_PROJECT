@@ -5,32 +5,33 @@ use ieee.math_real.all;
 
 entity IITBCPU is
     port (
-        clk : in std_logic
+        clk : in std_logic;
+		  deb : out integer
     );
 end entity IITBCPU;
 
-architecture rtl of trial_check is
+architecture rtl of IITBCPU is
 
     signal IR : std_logic_vector(15 downto 0) := (others => '0');
     signal T1, T2, T3 : std_logic_vector(15 downto 0);
-    signal C_flag, Z_flag : std_logic;
+    signal C_flag, Z_flag : std_logic := '0';
+	 signal trash : std_logic_vector(1 downto 0);
+
 
     type state is (S1, S2, S3, S4, S5, S6, S7, S8, S9, S10);
     signal FSM_state : state := S1 ;
 
-    type register_memory_unit is array(7 downto 0) of std_logic_vector(15 downto 0);
-    signal register_memory : register_memory_unit := (others => "0000000000000000");
+--    type register_memory_unit is array(7 downto 0) of std_logic_vector(15 downto 0);
+--    signal register_memory : register_memory_unit := (others => "0000000000000000");
 
-    type core_memory_unit is array(65535 downto 0) of std_logic_vector(15 downto 0);
-    signal core_memory : core_memory_unit;
-
-    signal trash : std_logic_vector(15 downto 0);
+--    type core_memory_unit is array(65535 downto 0) of std_logic_vector(15 downto 0);
+--    signal core_memory : core_memory_unit;
 
     component ALU is
         port (
             alu_A : in std_logic_vector(15 downto 0);
             alu_B : in std_logic_vector(15 downto 0);
-            instr : in integer;
+            instr : in natural range 1 to 8;
             alu_C : out std_logic_vector(15 downto 0);
             C, Z  : out std_logic
         );
@@ -39,26 +40,77 @@ architecture rtl of trial_check is
 	 signal alu_a : std_logic_vector(15 downto 0);
 	 signal alu_b : std_logic_vector(15 downto 0);
 	 signal alu_c : std_logic_vector(15 downto 0);
-	 signal instr : natural range 1 to 8 := 0;
+	 signal instr : natural range 1 to 8;
 	 signal C, Z  : std_logic;
 	 
-	 signal update_location : std_logic_vector(2 downto 0);
-	 signal decision : std_logic_vector(15 downto 0);
-	 signal sign_extended_Imm : std_logic_vector(15 downto 0);
-	 signal shifted_sign_extended : std_logic_vector(15 downto 0); 
-	 signal new_IP : std_logic_vector(15 downto 0);
-	 signal branch_jump : std_logic_vector(15 downto 0);
+	 component REG_FILE is
+    port (
+        A1 : in std_logic_vector (2 downto 0);
+        A2 : in std_logic_vector (2 downto 0);
+        A3 : in std_logic_vector (15 downto 0);
+        A4 : in std_logic_vector (2 downto 0);
+
+        D1 : out std_logic_vector (15 downto 0);
+        D2 : out std_logic_vector (15 downto 0);
+        D3 : out std_logic_vector (15 downto 0);
+        D4 : in std_logic_vector  (15 downto 0);
+
+        RF_W : in std_logic;
+        RF_IP: in std_logic;
+		  clk  : in std_logic
+    );
+	end component REG_FILE;
+	
+	signal rA1 : std_logic_vector (2 downto 0);
+	signal rA2 : std_logic_vector (2 downto 0);
+	signal wA4 : std_logic_vector (2 downto 0);
+	signal iA3 : std_logic_vector (15 downto 0);	
+	signal rD1 : std_logic_vector (15 downto 0);
+   signal rD2 : std_logic_vector (15 downto 0);
+   signal iD3 : std_logic_vector (15 downto 0);
+   signal wD4 : std_logic_vector (15 downto 0);
+   signal RF_W : std_logic := '0';
+   signal RF_IP: std_logic := '0';
+	
+	
+	component MEMORY is
+    port (
+        Mem_rAdd : in  std_logic_vector(15 downto 0);
+        Mem_rDat : out std_logic_vector(15 downto 0);
+
+        Mem_wAdd : in std_logic_vector(15 downto 0);
+        Mem_wDat : in std_logic_vector(15 downto 0);
+        Mem_w    : in std_logic;
+		  clk      : in std_logic
+    );
+	end component MEMORY;
+	
+	signal Mem_rAdd : std_logic_vector(15 downto 0);
+   signal Mem_rDat : std_logic_vector(15 downto 0);
+   signal Mem_wAdd : std_logic_vector(15 downto 0);
+   signal Mem_wDat : std_logic_vector(15 downto 0);
+   signal Mem_w    : std_logic := '0';
+	 
+	signal update_location       : std_logic_vector( 2 downto 0);
+	signal decision              : std_logic_vector(15 downto 0);
+	signal sign_extended_Imm     : std_logic_vector(15 downto 0);
+	signal shifted_sign_extended : std_logic_vector(15 downto 0); 
+	signal new_IP                : std_logic_vector(15 downto 0);
+	signal branch_jump           : std_logic_vector(15 downto 0);
 
 begin
 
-ALU_1 : ALU port map(alu_a, alu_b, instr, alu_c, C, Z);
+ALU_1      : ALU port map(alu_a, alu_b, instr, alu_c, C, Z);
+REG_FILE_1 : REG_FILE port map(rA1, rA2, iA3, wA4, rD1, rD2, iD3, wD4, RF_W, RF_IP, clk);
+Memory_1   : MEMORY port map(Mem_rAdd, Mem_rDat, Mem_wAdd, Mem_wDat, Mem_w, clk);
 
 state_process : process(FSM_state) 
 	begin
 	case FSM_state is 
 		when S1 =>
-            update_ip : if ((IR(15 downto 14) = "11") or (IR(15 downto 12) = "0001")) then
-								alu_a <= register_memory(7);
+				deb <= 1;
+            update_ip : if (IR(15 downto 14) = "11") then
+								alu_a <= iD3;
 								alu_b <= std_logic_vector(to_unsigned(0, 16));
 								instr <= 1;
 								alu_c <= T3;
@@ -66,44 +118,59 @@ state_process : process(FSM_state)
 								Z     <= trash(1);
 			
                      else
-								alu_a <= register_memory(7);
-								alu_b <= std_logic_vector(to_unsigned(2, 16));
+								alu_a <= iD3;
+								alu_b <= std_logic_vector(to_unsigned(1, 16));
 								instr <= 1;
 								alu_c <= T3;
 								C     <= trash(0);
 								Z     <= trash(1);
                         
                      end if update_ip;
-			IR <= core_memory(to_integer(unsigned(register_memory(7))));
+			   Mem_rAdd <= iD3;
+				IR <= Mem_rDat;
+				Mem_w <= '0';
+				RF_IP <= '0';
+				RF_w  <= '0';
             
 
         when S2 => 
-            T2 <= register_memory(to_integer(unsigned(IR(8 downto 6))));
-            register_memory(7) <= T3;
-			T1 <= register_memory(to_integer(unsigned(IR(11 downto 9))));
+				deb <= 2;
+				rA1 <= IR(8 downto 6);
+            T2  <= rD1;
+            rA2 <= IR(11 downto 9);
+			   T1  <= rD2;
+				RF_IP <= '1';
+				iA3 <= T3;
+				Mem_w <= '0';
+				RF_w  <= '0';
 		  
 		  when S3 =>
+				deb <= 3;
 				update_condition: if (IR(15) = '1') then 
                                 update_location <= IR(11 downto 9);
                               
-									elsif (IR(15 downto 12) = "0001") then
+										elsif (IR(15 downto 12) = "0001") then
                                 update_location <= IR(8 downto 6);
                               
-									elsif (IR(15) = '0') then
-                                update_location <= IR(5 downto 3);
-                              
-								end if update_condition;
+										elsif (IR(15) = '0') then
+                                update_location <= IR(5 downto 3); 
+										end if update_condition;
             
-				register_memory(to_integer(unsigned(update_location))) <= T3;
+				RF_W <= '1';
+				Mem_w <= '0';
+				RF_IP <= '0';
+				wA4  <= update_location;
+				wD4  <= T3;
 
         when S4 =>
+				deb <= 4;
 				decision_condition: if (IR(15 downto 12) = "0110") then
 													decision <= T2;
-									elsif (IR(15 downto 14) = "10") then
-													decision <= "00000000" & IR(8 downto 0);
-									elsif (IR(15 downto 12) = "0001") then 
+										  elsif (IR(15 downto 14) = "10") then
+													decision <= "0000000" & IR(8 downto 0);
+									     elsif (IR(15 downto 12) = "0001") then 
 													decision <= "0000000000" & IR(5 downto 0);
-								    end if decision_condition;
+								        end if decision_condition;
 				updation: 
 					if ((IR(15 downto 14) = "11") or (IR(14 downto 12) = "010")) then
 							alu_a <= T1;
@@ -170,9 +237,13 @@ state_process : process(FSM_state)
 							Z     <= Z_flag;
                
 					end if updation;
+				Mem_w <= '0';
+				RF_IP <= '0';
+				RF_w  <= '0';
         
 
         when S5 =>
+				deb <= 5;
 				sign_extended_Imm <= "0000000000" & IR(5 downto 0);
 				alu_a <= sign_extended_Imm;
 				alu_b <= T2;
@@ -180,43 +251,69 @@ state_process : process(FSM_state)
 				alu_c <= T3;
 				C     <= trash(0);
 				Z     <= trash(1);
+				Mem_w <= '0';
+				RF_IP <= '0';
+				RF_w  <= '0';
 
         when S6 => 
+				deb <= 6;
 				shifted_sign_extended <= "000000000" & IR(5 downto 0) & "0";
 				alu_b <= sign_extended_Imm;
-				alu_a <= register_memory(7);
+				alu_a <= iD3;
 				instr <= 1;
 				alu_c <= T3;
 				C     <= trash(0);
 				Z     <= trash(1);
+				Mem_w <= '0';
+				RF_IP <= '0';
+				RF_w  <= '0';
 
         when S7 => 
+				deb <= 7;
             decision: if (IR(15 downto 13) = "110") then
                         new_IP <= T3;
-                      elsif (IR(15 downto 12) = "1111") then 
-                        new_IP <= register_memory(to_integer(unsigned(IR(8 downto 6))));
+                      elsif (IR(15 downto 12) = "1111") then
+								rA2 <= IR(8 downto 6);
+                        new_IP <= rD2;
                       end if decision;
-            apply_decision: register_memory(7) <= new_IP;
+            RF_IP <= '1';
+				Mem_w <= '0';
+				RF_w  <= '0';
+				iA3 <= new_IP;
 
         when S8 => 
-            mem_data_retrive_1: T3 <= core_memory(to_integer(unsigned(T3)));
+				deb <= 8;
+            Mem_rAdd <= T3;
+				T3 <= Mem_rDat;
+				Mem_w <= '0';
+				RF_IP <= '0';
+				RF_w  <= '0';
 
         when S9 =>
-            mem_data_retrive_2: T1 <= core_memory(to_integer(unsigned(T3)));
+				deb <= 9;
+				Mem_w <= '1';
+				RF_IP <= '0';
+				RF_w  <= '0';
+				Mem_wAdd <= T3;
+            Mem_wDat <= T1;
 
         when S10 => 
+				deb <= 10;
             branch_condition: if (Z_flag = '1') then
                                  branch_jump <= "000000000" & IR(5 downto 0) & "0";
                               else
                                  branch_jump <= "0000000000000010"; --std_logic_vector(to_unsigned(2, 16));
                               end if branch_condition;
 										
-				alu_a <= register_memory(7);
+				alu_a <= iD3;
 				alu_b <= branch_jump;
 				instr <= 1;
 				alu_c <= T3;
 				C     <= trash(0);
 				Z     <= trash(1);
+				Mem_w <= '0';
+				RF_IP <= '0';
+				RF_w  <= '0';
 		 
 	end case;	
 end process state_process;
@@ -244,14 +341,14 @@ state_trans_process : process(clk)
 						 FSM_state <= S6;
 					elsif (IR(15 downto 12) = "1111") then 
 						 FSM_state <= S7;
-					elsif ((not IR(15)) or (IR(13) and (not IR(11))) or ((not IR(14)) and (not IR(13)))) then 
+					elsif (((not IR(15)) or (IR(13) and (not IR(12))) or ((not IR(14)) and (not IR(13)))) = '1') then 
 						 FSM_state <= S1;
 					end if;
 
 			  when S4 => 
 					if (IR(15 downto 12) = "1100") then
 						 FSM_state <= S10; 
-					elsif ((not IR(14)) or ((not IR(13))and (not IR(12)))) then 
+					elsif (((not IR(14)) or ((not IR(13))and (not IR(12)))) = '1') then 
 						 FSM_state <= S3; 
 					end if;
 
