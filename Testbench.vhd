@@ -8,14 +8,16 @@ architecture Test of Testbench is
 component IITBCPU is
     port (
         clk : in std_logic;
-		  deb : out integer
+		  deb : out integer;
+		  deb2: out std_logic_vector(15 downto 0)
     );
 end component IITBCPU;
 
 signal clk: std_logic := '0';
 signal deb: integer;
+signal deb2 : std_logic_vector(15 downto 0);
 begin
-	IITBCPU_1 : IITBCPU port map(clk,deb);
+	IITBCPU_1 : IITBCPU port map(clk,deb, deb2);
 	
 process
 begin
