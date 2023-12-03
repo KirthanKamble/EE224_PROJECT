@@ -13,7 +13,7 @@ end entity IITBCPU;
 
 architecture rtl of IITBCPU is
 
-    signal IR : std_logic_vector(15 downto 0) := "0000000000000000";
+    signal IR : std_logic_vector(15 downto 0) := (others =>'0');
     signal T1, T2, T3 : std_logic_vector(15 downto 0);
     signal C_flag, Z_flag : std_logic := '0';
 	 signal trash : std_logic_vector(1 downto 0);
@@ -541,8 +541,10 @@ variable next_FSM_state : state;
 				
 				if (IR(15 downto 12) = "1100") then
 						 next_FSM_state := S10; 
-					elsif (((not IR(14)) or ((not IR(13))and (not IR(12)))) = '1') then 
-						 next_FSM_state := S3; 
+			--		elsif (((not IR(14)) or ((not IR(13))and (not IR(12)))) = '1') then 
+				--		 next_FSM_state := S3; 
+					else
+			          next_FSM_state := S3; 		
 					end if;
         
 
