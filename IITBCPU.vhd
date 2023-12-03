@@ -460,92 +460,91 @@ variable next_FSM_state : state;
 						 next_FSM_state := S1;
 					end if;
 
-        when S4 =>
-				deb <= 4;
-				decision_condition: if (IR(15 downto 12) = "0110") then
-													decision <= T2;
-										  elsif (IR(15 downto 14) = "10") then
-													decision <= "0000000" & IR(8 downto 0);
-									     elsif (IR(15 downto 12) = "0001") then 
-													decision <= "0000000000" & IR(5 downto 0);
-								        end if decision_condition;
-				updation: 
-					if ((IR(15 downto 14) = "11") or (IR(14 downto 12) = "010")) then
-							alu_a <= T1;
-							alu_b <= decision;
-							instr <= 2;
-							T3 <= alu_c;
-							C     <= C_flag;
-							Z     <= Z_flag;
-					
-					elsif ((IR(15) = '0') or (IR(14) = '1') or (IR(12) = '1')) then
-							alu_a <= T1;
-							alu_b <= decision;
-							instr <= 1;
-							T3    <= alu_c;
-							C     <= C_flag;
-							Z     <= Z_flag;
-					
-					elsif ((IR(15 downto 14) = "10") and (IR(12) = '1')) then
-							alu_a <= T1;
-							alu_b <= decision;
-							instr <= 8;
-							T3 <= alu_c;
-							C     <= C_flag;
-							Z     <= Z_flag;
-			   	
-					elsif ((IR(15 downto 14) = "10") and (IR(12) = '0')) then
-							alu_a <= T1;
-							alu_b <= decision;
-							instr <= 7;
-							T3 <= alu_c;
-							C     <= C_flag;
-							Z     <= Z_flag;
-					
-					elsif (IR(15 downto 12) = "0011") then
-							alu_a <= T1;
-							alu_b <= decision;
-							instr <= 3;
-							T3 <= alu_c;
-							C     <= C_flag;
-							Z     <= Z_flag;
-					
-					elsif (IR(15 downto 12) = "0101") then
-							alu_a <= T1;
-							alu_b <= T2;
-							instr <= 5;
-							T3 <= alu_c;
-							C     <= C_flag;
-							Z     <= Z_flag;
-					
-					elsif (IR(15 downto 12) = "0100") then
-							alu_a <= T1;
-							alu_b <= decision;
-							instr <= 4;
-							T3 <= alu_c;
-							C     <= C_flag;
-							Z     <= Z_flag;
-					
-					elsif (IR(15 downto 12) = "1001") then
-							alu_a <= T1;
-							alu_b <= decision;
-							instr <= 6;
-							T3 <= alu_c;
-							C     <= C_flag;
-							Z     <= Z_flag;
-               
-					end if updation;
-				Mem_w <= '0';
-				RF_IP <= '0';
-				RF_w  <= '0';
-				
-				if (IR(15 downto 12) = "1100") then
-						 next_FSM_state := S10; 
-				elsif (((not IR(14)) or ((not IR(13))and (not IR(12)))) = '1') then 
-						 next_FSM_state := S3; 
-				end if;
-        
-
+       
+--        when S4 =>
+--				deb <= 4;
+--				decision_condition: if ((((not IR(15)) and (IR(14) or IR(13) or (not IR(12)))) or (IR(14) and (not IR(12)))) = '1') then
+--													decision <= T2;
+--										  elsif (IR(15 downto 14) = "10") then
+--													decision <= "0000000" & IR(8 downto 0);
+--									     elsif (IR(15 downto 12) = "0001") then 
+--													decision <= "0000000000" & IR(5 downto 0);
+--								        end if decision_condition;
+--				updation: 
+--					if ((IR(15 downto 12) = "0010") or (IR(15 downto 12) = "1100")) then
+--							alu_a <= T1;
+--							alu_b <= decision;
+--							instr <= 2;
+--							T3 <= alu_c;
+--							C     <= C_flag;
+--							Z     <= Z_flag;
+--					
+--					elsif ((IR(15 downto 12) = "0000") or (IR(15 downto 12) = "0001")) then
+--							alu_a <= T1;
+--							alu_b <= decision;
+--							instr <= 1;
+--							T3 <= alu_c;
+--							C     <= C_flag;
+--							Z     <= Z_flag;
+--					
+--					elsif (IR(15 downto 12) = "1001") then
+--							alu_a <= T1;
+--							alu_b <= decision;
+--							instr <= 8;
+--							T3 <= alu_c;
+--							C     <= C_flag;
+--							Z     <= Z_flag;
+--			   	
+--					elsif (IR(15 downto 12) = "1000") then
+--							alu_a <= T1;
+--							alu_b <= decision;
+--							instr <= 7;
+--							T3 <= alu_c;
+--							C     <= C_flag;
+--							Z     <= Z_flag;
+--					
+--					elsif (IR(15 downto 12) = "0011") then
+--							alu_a <= T1;
+--							alu_b <= decision;
+--							instr <= 3;
+--							T3 <= alu_c;
+--							C     <= C_flag;
+--							Z     <= Z_flag;
+--					
+--					elsif (IR(15 downto 12) = "1010") then
+--							alu_a <= T1;
+--							alu_b <= decision;
+--							instr <= 5;
+--							T3 <= alu_c;
+--							C     <= C_flag;
+--							Z     <= Z_flag;
+--					
+--					elsif (IR(15 downto 12) = "0100") then
+--							alu_a <= T1;
+--							alu_b <= decision;
+--							instr <= 4;
+--							T3 <= alu_c;
+--							C     <= C_flag;
+--							Z     <= Z_flag;
+--					
+--					elsif (IR(15 downto 12) = "0110") then
+--							alu_a <= T1;
+--							alu_b <= decision;
+--							instr <= 6;
+--							T3 <= alu_c;
+--							C     <= C_flag;
+--							Z     <= Z_flag;
+--               
+--					end if updation;
+--				Mem_w <= '0';
+--				RF_IP <= '0';
+--				RF_w  <= '0';
+--				
+--				if (IR(15 downto 12) = "1100") then
+--						 next_FSM_state := S10; 
+--				elsif (((not IR(14)) or ((not IR(13))and (not IR(12)))) = '1') then 
+--						 next_FSM_state := S3; 
+--				end if;
         when S5 =>
 				deb <= 5;
 				sign_extended_Imm <= "0000000000" & IR(5 downto 0);
