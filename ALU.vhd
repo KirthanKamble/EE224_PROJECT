@@ -24,7 +24,7 @@ architecture rtl of ALU is
             P := A(i) xor B(i);
             temp_result(i) := P xor C_par;
             C_par := G or (P and C_par);
-        end loop add_instance;						
+        end loop add_instance;
         return temp_result;
     end function;
 
@@ -39,7 +39,7 @@ architecture rtl of ALU is
             temp_result(i) := P xor C_par;
             C_par := G or (P and C_par);
         end loop add_instance;
-	    temp_result(4) := C_par;
+	     temp_result(4) := C_par;
         return temp_result;
     end function;
 
@@ -53,16 +53,18 @@ architecture rtl of ALU is
             P := A(i) xor (not B(i));
             temp_result(i) := P xor C_par;
             C_par := G or (P and C_par);
-        end loop sub_instance;						  
+        end loop sub_instance;
+		  
         return temp_result;
     end function;    
 
     function perform_multiplication(A, B : std_logic_vector(15 downto 0)) return std_logic_vector is
-        variable temp_result : std_logic_vector(15 downto 0);
-        variable product     : std_logic_vector(7 downto 0) := "00000000";
-	variable AB0,AB1,AB2,AB3,t1a,t2a,t3a : std_logic_vector(3 downto 0);
-	variable t1,t2,t3: std_logic_vector(4 downto 0);
-    begin
+			variable temp_result            : std_logic_vector(15 downto 0);
+			variable product     			  : std_logic_vector(7 downto 0) := "00000000";
+			variable AB0, AB1, AB2, AB3 	  : std_logic_vector(3 downto 0);
+			variable t1a, t2a, t3a 			  : std_logic_vector(3 downto 0);
+			variable t1, t2, t3				  : std_logic_vector(4 downto 0);
+   begin
 	k1: for i in 0 to 3 loop
 		AB0(i) := A(i) and B(0);
 		AB1(i) := A(i) and B(1);
@@ -71,21 +73,26 @@ architecture rtl of ALU is
 	end loop k1;
 
 	
-	t1a(2 downto 0) := AB0(3 downto 1);
-	t1a(3) := '0';
-	t1 := perform_4bit_addition(t1a,AB1,'0');
-	t2a(2 downto 0) := t1(3 downto 1);
-	t2a(3) := '0';
-	t2 := perform_4bit_addition(t2a,AB2,t1(4));
-	t3a(2 downto 0) := t2(3 downto 1);
-	t3a(3) := '0';
-	t3 := perform_4bit_addition(t3a,AB3,t2(4));
-	temp_result(0) := AB0(0);
-	temp_result(1) := t1(0);
-	temp_result(2) := t2(0);
-	temp_result(7 downto 3) := t3;
-        return temp_result;
-    end function;    
+		t1a(2 downto 0) := AB0(3 downto 1);
+		t1a(3) := '0';
+		t1 := perform_4bit_addition(t1a,AB1,'0');
+		
+		t2a(2 downto 0) := t1(3 downto 1);
+		t2a(3) := '0';
+		t2 := perform_4bit_addition(t2a,AB2,t1(4));
+		
+		t3a(2 downto 0) := t2(3 downto 1);
+		t3a(3) := '0';
+		t3 := perform_4bit_addition(t3a,AB3,t2(4));
+		
+		temp_result(0) := AB0(0);
+		temp_result(1) := t1(0);
+		temp_result(2) := t2(0);
+		temp_result(7 downto 3) := t3;
+    
+	  return temp_result;
+    
+	 end function;    
 
     function perform_and(A, B : std_logic_vector(15 downto 0)) return std_logic_vector is
         variable temp_result : std_logic_vector(15 downto 0);
@@ -115,20 +122,20 @@ architecture rtl of ALU is
     end function;    
 
     function perform_LLI(A, B : std_logic_vector(15 downto 0)) return std_logic_vector is
-        variable temp_result : std_logic_vector(15 downto 0);
-        variable A_par       : std_logic_vector(8 downto 0) := A(8 downto 0);
-        variable B_par       : std_logic_vector(6 downto 0) := B(6 downto 0);
+        variable temp_result  : std_logic_vector(15 downto 0);
+        variable A_par        : std_logic_vector(7 downto 0) := A(7 downto 0);
+        variable B_par        : std_logic_vector(7 downto 0) := B(7 downto 0);
     begin
         temp_result := A_par & B_par;
         return temp_result;
     end function;    
 
     function perform_LHI(A, B : std_logic_vector(15 downto 0)) return std_logic_vector is
-        variable temp_result : std_logic_vector(15 downto 0);
-        variable A_par       : std_logic_vector(8 downto 0) := A(8 downto 0);
-        variable B_par       : std_logic_vector(6 downto 0) := B(6 downto 0);
+        variable temp_result  : std_logic_vector(15 downto 0);
+        variable A_par        : std_logic_vector(7 downto 0) := A(7 downto 0);
+        variable B_par        : std_logic_vector(7 downto 0) := B(7 downto 0);
     begin
-        temp_result := B_par & A_par;
+        temp_result := A_par & B_par;
         return temp_result;
     end function;    
 
@@ -163,10 +170,10 @@ begin
                  perform_subtraction (alu_A, alu_B)   when 2,
                  perform_multiplication(alu_A, alu_B) when 3,
                  perform_and(alu_A, alu_B)            when 4,
-                 perform_or(alu_A, alu_B)	          when 5,
-                 perform_imp(alu_A, alu_B)	          when 6,
-                 perform_LHI(alu_A, alu_B)	          when 7,
-	             perform_LLI(alu_A, alu_B)	          when 8;
+                 perform_or(alu_A, alu_B)	            when 5,
+                 perform_imp(alu_A, alu_B)	         when 6,
+                 perform_LHI(alu_A, alu_B)	         when 7,
+	              perform_LLI(alu_A, alu_B)	         when 8;
 
     with instr select 
         C <= carry_flag(alu_A, alu_B, '0') when 1,
