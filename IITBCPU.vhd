@@ -429,7 +429,7 @@ variable next_FSM_state : state;
 								alu_a <= iD3;
 								alu_b <= std_logic_vector(to_unsigned(0, 16));
 								instr <= 1;
-								T3 <= alu_c;
+								T1 <= alu_c;
 								C     <= trash(0);
 								Z     <= trash(1);
 			
@@ -464,17 +464,18 @@ variable next_FSM_state : state;
 				Mem_w <= '0';
 				RF_w  <= '0';
 				
-				if (((not IR(15) or ((not IR(13) and ((not IR(14) or (not IR(12))))))) = '1') and reset = '0') then 
+				if (((not IR(15) or (not IR(13) and (not IR(14) or not IR(12)))) = '1') and reset = '0') then 
 						 next_FSM_state := S4;
 				elsif ((IR(15 downto 13) = "101") and reset = '0') then 
 						 next_FSM_state := S5;
+				
 				elsif (reset ='1') then
 						next_FSM_state  := Rest;
 				end if;
 		  
 		  when S3 =>
-				deb <= 3;
-				rst   <= '0';
+				deb <= 3 ;
+				rst <='0';
 				update_condition: if (IR(15) = '1') then 
                                 update_location <= IR(11 downto 9);
                               
@@ -621,7 +622,7 @@ variable next_FSM_state : state;
 				deb <= 6;
 				rst   <= '0';
 				shifted_sign_extended <= "000000000" & IR(5 downto 0) & "0";
-				alu_b <= sign_extended_Imm;
+				alu_b <= shifted_sign_extended;
 				alu_a <= iD3;
 				instr <= 1;
 				T3 <= alu_c;
